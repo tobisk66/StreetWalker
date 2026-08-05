@@ -209,7 +209,17 @@ function loadMunicipalityStreetList() {
         },
         body: overpassQuery,
       })
-        .then((response) => response.json())
+        .then(async (response) => {
+          const text = await response.text();
+          let data = null;
+          try {
+            data = JSON.parse(text);
+          } catch (error) {
+            console.error('Overpass response was not valid JSON', error, text);
+            throw error;
+          }
+          return data;
+        })
         .then((data) => {
           const elements = Array.isArray(data?.elements) ? data.elements : [];
           const streetRows = elements
