@@ -1,0 +1,9 @@
+{
+  "name": "walker-streets-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Small same-origin proxy for place search and Overpass requests.",
+  "scripts": {
+    "start": "node proxy-server.js"
+  }
+}
