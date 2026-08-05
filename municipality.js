@@ -77,14 +77,21 @@ function getAllSavedWalkPoints() {
   return (saveHistory || []).flatMap((entry) => entry.points || []);
 }
 
-function computeStreetCoveragePercentage(points, streetCenter) {
+function computeStreetCoveragePercentage(points, streetCenter, streetId, savedEntries = []) {
+  if (savedEntries.length && streetId != null) {
+    const matchedWalks = savedEntries.filter((entry) => (entry.matchedStreetIds || []).some((id) => String(id) === String(streetId)));
+    if (matchedWalks.length) {
+      return Math.min(100, Math.round((matchedWalks.length / savedEntries.length) * 100));
+    }
+  }
+
   if (!streetCenter || !points.length) return 0;
   const centerPoint = { lat: Number(streetCenter.lat), lng: Number(streetCenter.lon) };
   const matchedPoints = points.filter((trackPoint) => haversineDistance(trackPoint, centerPoint) < 30);
   return Math.min(100, Math.round((matchedPoints.length / points.length) * 100));
 }
 
-function buildStreetRows(elements, walkedPoints) {
+function buildStreetRows(elements, walkedPoints, savedEntries = []) {
   const grouped = new Map();
 
   elements
@@ -97,20 +104,21 @@ function buildStreetRows(elements, walkedPoints) {
       }
 
       const center = way?.center || way?.geometry?.[0] || null;
-      const streetKey = normalizedName;
+      const streetId = way?.id != null ? String(way.id) : null;
+      const streetKey = streetId || normalizedName;
       const existing = grouped.get(streetKey);
       if (existing) {
-        if (!existing.count) {
-          existing.count = 0;
-        }
         return;
       }
 
       grouped.set(streetKey, {
+        id: streetId,
         name: rawName,
         normalizedName,
         center,
-        percentage: walkedPoints.length ? computeStreetCoveragePercentage(walkedPoints, center) : 0,
+        percentage: walkedPoints.length || savedEntries.length
+          ? computeStreetCoveragePercentage(walkedPoints, center, streetId, savedEntries)
+          : 0,
       });
     });
 
@@ -277,7 +285,8 @@ function loadMunicipalityStreetList() {
         })
         .then((data) => {
           const elements = Array.isArray(data?.elements) ? data.elements : [];
-          const streetRows = buildStreetRows(elements, walkedPoints);
+          const savedEntries = Array.isArray(saveHistory) ? saveHistory : [];
+          const streetRows = buildStreetRows(elements, walkedPoints, savedEntries);
 
           currentMunicipalityResults = streetRows;
           currentPage = 1;

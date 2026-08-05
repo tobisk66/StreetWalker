@@ -179,10 +179,16 @@ function stopTrackingAndSave() {
   }
 
   if (trackPoints.length > 1) {
+    const matchedStreetIds = roadFeatures
+      .filter((feature) => trackPoints.some((trackPoint) => isTrackNearRoad(trackPoint, feature.points)))
+      .map((feature) => feature.id)
+      .filter(Boolean);
+
     saveHistory.push({
       startedAt: new Date().toISOString(),
       points: [...trackPoints],
       distance: computeDistanceInMeters(trackPoints),
+      matchedStreetIds,
     });
     saveWalkHistory();
     renderHistory();
@@ -235,6 +241,7 @@ function drawRoadsInMap(bbox) {
       roadFeatures = elements
         .filter((element) => element.type === 'way')
         .map((way) => ({
+          id: way.id,
           name: way.tags?.name || 'Street',
           points: way.geometry
             .map((node) => nodes.get(node?.id || node) || [])

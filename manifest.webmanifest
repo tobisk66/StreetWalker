@@ -1,6 +1,6 @@
 {
-  "name": "Walker Streets",
-  "short_name": "Walker",
+  "name": "StreetWalker",
+  "short_name": "StreetWalker",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#f5f7f8",
