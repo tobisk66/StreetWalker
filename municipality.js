@@ -1,7 +1,8 @@
-const proxyBaseUrl = window.PROXY_BASE_URL || 'https://streetwalker.onrender.com';
+const proxyBaseUrl = window.PROXY_BASE_URL || (typeof window !== 'undefined' && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+  ? 'http://127.0.0.1:3000'
+  : 'https://streetwalker.onrender.com');
+const testApiBaseUrl = 'http://127.0.0.1:3001';
 const municipalityInput = document.getElementById('municipalityInput');
-const municipalitySuggestions = document.getElementById('municipalitySuggestions');
-const loadMunicipalityBtn = document.getElementById('loadMunicipalityBtn');
 const prevPageBtn = document.getElementById('prevPageBtn');
 const nextPageBtn = document.getElementById('nextPageBtn');
 const pageInfo = document.getElementById('pageInfo');
@@ -13,52 +14,10 @@ let currentMunicipalityResults = [];
 let currentPage = 1;
 let latestSuggestionRequest = 0;
 let suggestionDebounceTimer = null;
+let nordreFolloRowsPromise = null;
+let nordreFolloRowsCache = [];
 
-const LOCAL_MUNICIPALITIES = [
-  'Oslo',
-  'Bergen',
-  'Trondheim',
-  'Stavanger',
-  'Drammen',
-  'Fredrikstad',
-  'Skien',
-  'Tromsø',
-  'Kristiansand',
-  'Alesund',
-  'Hamar',
-  'Narvik',
-  'Bodø',
-  'Arendal',
-  'Lillestrøm',
-  'Molde',
-  'Moss',
-  'Sandefjord',
-  'Kongsberg',
-  'Haugesund',
-];
-
-const FALLBACK_STREETS = {
-  Oslo: ['Karl Johans gate', 'Storgata', 'Akersgata', 'Pilestredet', 'Biskop Gunnerus gate', 'Kirkeveien', 'Ullevålsveien', 'Torggata', 'Nobels gate', 'Østbanestredet', 'Grefsenveien', 'Sofienbergveien', 'Schweigaards gate', 'Rosenborgveien', 'Sinsenveien'],
-  Bergen: ['Bryggen', 'Kong Oscars gate', 'Vetrlidsallmenningen', 'Strandsveien', 'Nordahl Griegsgate', 'Lille Øvregaten', 'Bergenhus', 'Fjellveien', 'Kalfarveien', 'Bergensgata'],
-  Trondheim: ['Prinsens gate', 'Nordre gate', 'Olav Tryggvasons gate', 'Sverres gate', 'Elgeseter gate', 'Munkegaten', 'Fjordgata', 'Bakkeveien', 'Ladeveien', 'Dronningens gate'],
-  Stavanger: ['Kirkegata', 'Stavangergata', 'Eiendomsveien', 'Sørmarkveien', 'Munkegata', 'Nedre Strandgate', 'Vålandsgata', 'Jåttåvågen', 'Østergata'],
-  Drammen: ['Bragernes torg', 'Kirkegata', 'Nedre gate', 'Tollbodgata', 'Strømsø', 'Vestregate', 'Drammensveien', 'Bjørndalsveien'],
-  Fredrikstad: ['Storgata', 'Østregata', 'Vestregata', 'Løkkevikveien', 'Kirkegata', 'Bakkeveien', 'Rådhusgata', 'Parkveien'],
-  Skien: ['Storgata', 'Langesundsgate', 'Kirkegata', 'Tollbodgata', 'Høgskoleveien', 'Midtbyen', 'Jernbanegata'],
-  Tromsø: ['Storgata', 'Sjøgata', 'Kirkegata', 'Prestegata', 'Nordre Tollbodgate', 'Sofies gate', 'Tromsøya'],
-  Kristiansand: ['Storgata', 'Østregate', 'Vestregate', 'Markens gate', 'Kirkegata', 'Rådhusgata', 'Korsgata'],
-  Alesund: ['Kirkegata', 'Brekkeveien', 'Søndre gate', 'Øvre gate', 'Nørvegen', 'Mørevegen'],
-  Hamar: ['Storgata', 'Kirkegata', 'Torggata', 'Rådhusgata', 'Vestervegen', 'Guldsmedvegen', 'Nordre gate'],
-  Narvik: ['Storgata', 'Kirkegata', 'Berggata', 'Tromsøgata', 'Fjellvegen', 'Rådhusgata'],
-  Bodø: ['Storgata', 'Kirkegata', 'Torget', 'Kongsveien', 'Rådhusgata', 'Østergata', 'Havnegata'],
-  Arendal: ['Kirkegata', 'Østregate', 'Torggata', 'Lilleveien', 'Bakkeveien', 'Nesetveien'],
-  Lillestrøm: ['Storgata', 'Kirkegata', 'Kirkegaten', 'Rådhusgata', 'Brønnveien', 'Søndre gate'],
-  Molde: ['Storgata', 'Kirkegata', 'Bakkeveien', 'Christiansundvegen', 'Rådhusgata'],
-  Moss: ['Storgata', 'Kirkegata', 'Vestsiden', 'Torggata', 'Østregata', 'Sørbyen'],
-  Sandefjord: ['Storgata', 'Kirkegata', 'Nedre gate', 'Tollbodgata', 'Rådhusgata'],
-  Kongsberg: ['Storgata', 'Kirkegata', 'Torggata', 'Bergensgata', 'Nordagata'],
-  Haugesund: ['Storgata', 'Kirkegata', 'Rådhusgata', 'Sørveien', 'Torggata', 'Nedre gate'],
-};
+const LOCAL_PLACE_SUGGESTIONS = ['Nordre Follo'];
 
 function sanitizeQuery(text) {
   return text.replace(/['"`]/g, '').trim();
@@ -94,57 +53,105 @@ function computeStreetCoveragePercentage(points, streetCenter, streetId, savedEn
 function buildStreetRows(elements, walkedPoints, savedEntries = []) {
   const grouped = new Map();
 
-  elements
-    .filter((element) => element?.type === 'way')
-    .forEach((way) => {
-      const rawName = way?.tags?.name || 'Unnamed street';
-      const normalizedName = normalizeStreetName(rawName);
-      if (!normalizedName || normalizedName === 'unnamed street') {
-        return;
-      }
+  const ways = Array.isArray(elements)
+    ? elements.filter((element) => element?.type === 'way')
+    : [];
 
-      const center = way?.center || way?.geometry?.[0] || null;
-      const streetId = way?.id != null ? String(way.id) : null;
-      const streetKey = streetId || normalizedName;
-      const existing = grouped.get(streetKey);
-      if (existing) {
-        return;
-      }
+  ways.forEach((way) => {
+    const rawName = way?.tags?.name || '';
+    const normalizedName = normalizeStreetName(rawName);
+    if (!normalizedName || normalizedName === 'unnamed street' || normalizedName === 'unnamed') {
+      return;
+    }
 
-      grouped.set(streetKey, {
-        id: streetId,
-        name: rawName,
-        normalizedName,
-        center,
-        percentage: walkedPoints.length || savedEntries.length
-          ? computeStreetCoveragePercentage(walkedPoints, center, streetId, savedEntries)
-          : 0,
-      });
+    const streetId = way?.id != null ? String(way.id) : null;
+    const streetKey = streetId || normalizedName;
+    const existing = grouped.get(streetKey);
+    if (existing) {
+      return;
+    }
+
+    let center = null;
+    if (way?.center && typeof way.center === 'object') {
+      center = way.center;
+    } else if (Array.isArray(way?.geometry) && way.geometry.length) {
+      const firstPoint = way.geometry[0];
+      center = firstPoint?.lat != null && firstPoint?.lon != null
+        ? { lat: firstPoint.lat, lon: firstPoint.lon }
+        : null;
+    }
+
+    grouped.set(streetKey, {
+      id: streetId,
+      name: rawName,
+      normalizedName,
+      center,
+      percentage: walkedPoints.length || savedEntries.length
+        ? computeStreetCoveragePercentage(walkedPoints, center, streetId, savedEntries)
+        : 0,
     });
+  });
 
-  return Array.from(grouped.values())
-    .filter((street) => street.name && street.name !== 'Unnamed street')
-    .sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
+  return sortStreetRows(
+    Array.from(grouped.values()).filter((street) => street.name && street.name !== 'Unnamed street')
+  );
+}
+
+function sortStreetRows(rows) {
+  return [...rows].sort((a, b) => {
+    const aPercentage = Number(a.percentage) || 0;
+    const bPercentage = Number(b.percentage) || 0;
+    const aCovered = aPercentage > 0;
+    const bCovered = bPercentage > 0;
+
+    if (aCovered !== bCovered) {
+      return aCovered ? -1 : 1;
+    }
+
+    if (aPercentage !== bPercentage) {
+      return bPercentage - aPercentage;
+    }
+
+    const aName = String(a.name || '');
+    const bName = String(b.name || '');
+    const nameCompare = aName.localeCompare(bName, 'nb', { sensitivity: 'base' });
+    if (nameCompare !== 0) {
+      return nameCompare;
+    }
+
+    const aOrder = Number.isFinite(Number(a.sortOrder)) ? Number(a.sortOrder) : Number.MAX_SAFE_INTEGER;
+    const bOrder = Number.isFinite(Number(b.sortOrder)) ? Number(b.sortOrder) : Number.MAX_SAFE_INTEGER;
+
+    if (aOrder !== bOrder) {
+      return aOrder - bOrder;
+    }
+
+    return 0;
+  });
 }
 
 function renderSuggestions(results) {
-  municipalitySuggestions.innerHTML = '';
   municipalitySuggestionsList.innerHTML = '';
 
-  if (!results.length) {
+  const normalizedInput = sanitizeQuery(municipalityInput.value || '').toLowerCase();
+  const fallbackSuggestions = normalizedInput.includes('nordre follo')
+    ? [{ display_name: 'Nordre Follo' }]
+    : [];
+  const finalResults = (Array.isArray(results) ? results : []).length
+    ? results
+    : fallbackSuggestions;
+
+  if (!finalResults.length) {
     municipalitySuggestionsList.classList.add('hidden');
     return;
   }
 
   municipalitySuggestionsList.classList.remove('hidden');
 
-  results.slice(0, 8).forEach((place) => {
-    const option = document.createElement('option');
-    const displayName = typeof place === 'string' ? place : place.display_name;
+  finalResults.slice(0, 8).forEach((place) => {
+    const displayName = typeof place === 'string' ? place : place?.display_name;
     const suggestionText = displayName ? displayName.trim() : '';
     const shortName = suggestionText.split(',')[0].trim();
-    option.value = shortName;
-    municipalitySuggestions.appendChild(option);
 
     const item = document.createElement('button');
     item.type = 'button';
@@ -158,13 +165,17 @@ function renderSuggestions(results) {
 function fetchMunicipalitySuggestions() {
   const municipalityName = sanitizeQuery(municipalityInput.value);
   if (!municipalityName) {
-    municipalitySuggestions.innerHTML = '';
     municipalitySuggestionsList.innerHTML = '';
     municipalitySuggestionsList.classList.add('hidden');
     return;
   }
 
   const requestId = ++latestSuggestionRequest;
+  const localMatches = LOCAL_PLACE_SUGGESTIONS.filter((place) => place.toLowerCase().includes(municipalityName.toLowerCase())).slice(0, 8);
+
+  if (localMatches.length) {
+    renderSuggestions(localMatches.map((place) => ({ display_name: place })));
+  }
 
   fetch(`${proxyBaseUrl}/proxy/nominatim?format=jsonv2&limit=8&addressdetails=1&q=${encodeURIComponent(municipalityName)}`)
     .then((response) => {
@@ -178,7 +189,7 @@ function fetchMunicipalitySuggestions() {
         return;
       }
 
-      const uniqueResults = Array.isArray(results)
+      const remoteResults = Array.isArray(results)
         ? results.filter((place, index, list) => {
             const displayName = typeof place === 'string' ? place : place?.display_name;
             const key = (displayName || '').trim().toLowerCase();
@@ -189,15 +200,27 @@ function fetchMunicipalitySuggestions() {
           })
         : [];
 
+      const suggestions = [
+        ...localMatches.map((place) => ({ display_name: place })),
+        ...remoteResults,
+      ];
+
+      const uniqueResults = suggestions.filter((place, index, list) => {
+        const displayName = typeof place === 'string' ? place : place?.display_name;
+        const key = (displayName || '').trim().toLowerCase();
+        return key && list.findIndex((candidate) => {
+          const candidateName = typeof candidate === 'string' ? candidate : candidate?.display_name;
+          return (candidateName || '').trim().toLowerCase() === key;
+        }) === index;
+      });
+
       renderSuggestions(uniqueResults);
     })
     .catch(() => {
       if (requestId !== latestSuggestionRequest) {
         return;
       }
-      municipalitySuggestions.innerHTML = '';
-      municipalitySuggestionsList.innerHTML = '';
-      municipalitySuggestionsList.classList.add('hidden');
+      renderSuggestions(localMatches.map((place) => ({ display_name: place })));
     });
 }
 
@@ -221,7 +244,66 @@ function selectSuggestion(placeName) {
   loadMunicipalityStreetList();
 }
 
-function loadMunicipalityStreetList() {
+function autoLoadNordreFolloIfNeeded() {
+  const value = sanitizeQuery(municipalityInput.value || '').toLowerCase();
+  if (value.includes('nordre follo')) {
+    loadMunicipalityStreetList();
+  }
+}
+
+async function loadLocalNordreFolloRows(savedEntries = []) {
+  if (nordreFolloRowsPromise) {
+    return nordreFolloRowsPromise;
+  }
+
+  const datasetCandidates = [
+    './data/nordre-follo-roads-complete.json',
+  ];
+
+  nordreFolloRowsPromise = (async () => {
+    for (const datasetPath of datasetCandidates) {
+      try {
+        const response = await fetch(datasetPath, { cache: 'no-store' });
+        if (!response.ok) {
+          continue;
+        }
+
+        const data = await response.json();
+        const roads = Array.isArray(data?.roads) ? data.roads : [];
+        const rows = roads
+          .map((road, index) => {
+            const geometry = Array.isArray(road?.geometry) ? road.geometry : [];
+            const firstPoint = geometry[0] || [];
+            const center = firstPoint.length >= 2 ? { lat: Number(firstPoint[1]), lon: Number(firstPoint[0]) } : null;
+            const name = typeof road?.name === 'string' ? road.name.trim() : '';
+            return {
+              id: road?.id || `nf-${String(index + 1).padStart(3, '0')}`,
+              name,
+              percentage: savedEntries.length ? computeStreetCoveragePercentage([], center, road?.id, savedEntries) : 0,
+              sortOrder: index,
+              center,
+            };
+          })
+          .filter((street) => Boolean(street.name));
+
+        if (rows.length) {
+          nordreFolloRowsCache = sortStreetRows(rows);
+          return nordreFolloRowsCache;
+        }
+      } catch (error) {
+        console.warn(`Unable to load local Nordre Follo dataset ${datasetPath}`, error);
+      }
+    }
+
+    console.error('Unable to load local Nordre Follo road data');
+    nordreFolloRowsCache = [];
+    return [];
+  })();
+
+  return nordreFolloRowsPromise;
+}
+
+async function loadMunicipalityStreetList() {
   const municipalityName = sanitizeQuery(municipalityInput.value);
   if (!municipalityName) {
     streetList.innerHTML = '<div class="street-entry">Enter a municipality/city to load streets.</div>';
@@ -229,28 +311,52 @@ function loadMunicipalityStreetList() {
   }
 
   const walkedPoints = getAllSavedWalkPoints();
+  const normalized = municipalityName.toLowerCase();
+
+  if (normalized.includes('nordre follo')) {
+    streetList.innerHTML = '<div class="street-entry">Loading local road dataset…</div>';
+
+    const savedEntries = Array.isArray(saveHistory) ? saveHistory : [];
+    const rows = await loadLocalNordreFolloRows(savedEntries);
+    if (rows.length) {
+      currentMunicipalityResults = rows;
+      currentPage = 1;
+      renderStreetTable();
+      return;
+    }
+
+    currentMunicipalityResults = [];
+    currentPage = 1;
+    streetList.innerHTML = '<div class="street-entry">No streets were loaded from the local dataset.</div>';
+    return;
+  }
+
+  currentMunicipalityResults = [];
+  currentPage = 1;
+  streetList.innerHTML = '<div class="street-entry">No local street dataset is available for this place.</div>';
+  return;
+
   const geocodeUrl = `${proxyBaseUrl}/proxy/nominatim?format=jsonv2&limit=1&q=${encodeURIComponent(municipalityName)}`;
   streetList.innerHTML = '<div class="street-entry">Loading streets…</div>';
 
   fetch(geocodeUrl)
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Geocoding request failed');
+      }
+      return response.json();
+    })
     .then((results) => {
-      if (!results.length) {
-        const normalized = municipalityName.toLowerCase();
-        const selected = LOCAL_MUNICIPALITIES.find((place) => place.toLowerCase() === normalized);
-        if (selected && FALLBACK_STREETS[selected]) {
-          const streetRows = FALLBACK_STREETS[selected].map((name) => ({
-            name,
-            percentage: 0,
-          })).sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
-
-          currentMunicipalityResults = streetRows;
+      if (!Array.isArray(results) || !results.length) {
+        const fallbackRows = getFallbackStreetRows(municipalityName, walkedPoints, Array.isArray(saveHistory) ? saveHistory : []);
+        if (fallbackRows.length) {
+          currentMunicipalityResults = fallbackRows;
           currentPage = 1;
           renderStreetTable();
           return;
         }
 
-        streetList.innerHTML = '<div class="street-entry">That municipality is not in the local test list yet. Try one of the suggested names like Oslo, Bergen, Trondheim, or Stavanger.</div>';
+        streetList.innerHTML = '<div class="street-entry">No place match was found for that municipality name.</div>';
         return;
       }
 
@@ -259,8 +365,8 @@ function loadMunicipalityStreetList() {
       const maxLat = Number(bbox[1]);
       const minLng = Number(bbox[2]);
       const maxLng = Number(bbox[3]);
-      const overpassQuery = `[out:json][timeout:25];(
-        way["highway"](${minLat},${minLng},${maxLat},${maxLng});
+      const overpassQuery = `[out:json][timeout:60];(
+        way["highway"]["name"](${minLat},${minLng},${maxLat},${maxLng});
         >;
       );
       out tags center;`;
@@ -288,58 +394,100 @@ function loadMunicipalityStreetList() {
           const savedEntries = Array.isArray(saveHistory) ? saveHistory : [];
           const streetRows = buildStreetRows(elements, walkedPoints, savedEntries);
 
-          currentMunicipalityResults = streetRows;
+          if (streetRows.length) {
+            currentMunicipalityResults = streetRows;
+            currentPage = 1;
+            renderStreetTable();
+            return;
+          }
+
+          currentMunicipalityResults = [];
           currentPage = 1;
-          renderStreetTable();
+          streetList.innerHTML = '<div class="street-entry">No streets were loaded from the local dataset.</div>';
         });
     })
     .catch((error) => {
       console.error('Unable to load municipality street list', error);
-      const normalized = municipalityName.toLowerCase();
-      const selected = LOCAL_MUNICIPALITIES.find((place) => place.toLowerCase() === normalized);
-      if (selected && FALLBACK_STREETS[selected]) {
-        const streetRows = FALLBACK_STREETS[selected].map((name) => ({
-          name,
-          percentage: 0,
-        })).sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
-
-        currentMunicipalityResults = streetRows;
-        currentPage = 1;
-        renderStreetTable();
-        return;
-      }
-
-      streetList.innerHTML = '<div class="street-entry">Street list could not be loaded. Try one of the suggested municipality names and try again.</div>';
+      currentMunicipalityResults = [];
+      currentPage = 1;
+      streetList.innerHTML = '<div class="street-entry">Street list could not be loaded because no local dataset is configured for this place.</div>';
     });
 }
 
 function renderStreetTable() {
+  const rows = Array.isArray(currentMunicipalityResults) ? currentMunicipalityResults : [];
   const start = (currentPage - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE;
-  const pageItems = currentMunicipalityResults.slice(start, end);
+  const pageItems = rows.slice(start, end);
 
-  pageInfo.textContent = `Page ${currentPage} of ${Math.max(1, Math.ceil(currentMunicipalityResults.length / PAGE_SIZE))}`;
-  prevPageBtn.disabled = currentPage === 1;
-  nextPageBtn.disabled = currentPage >= Math.ceil(currentMunicipalityResults.length / PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  if (pageInfo) {
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${rows.length} streets)`;
+  }
+  if (prevPageBtn) {
+    prevPageBtn.disabled = currentPage === 1;
+  }
+  if (nextPageBtn) {
+    nextPageBtn.disabled = currentPage >= totalPages;
+  }
 
-  streetList.innerHTML = '';
+  if (streetList) {
+    streetList.innerHTML = '';
+  }
   if (!pageItems.length) {
-    streetList.innerHTML = '<div class="street-entry">No streets found.</div>';
+    if (streetList) {
+      streetList.innerHTML = '<div class="street-entry">No streets found.</div>';
+    }
     return;
   }
 
   pageItems.forEach((street) => {
     const entry = document.createElement('div');
     entry.className = 'street-entry';
-    entry.innerHTML = `<strong>${street.name}</strong><span>${street.percentage}% walked</span>`;
-    streetList.appendChild(entry);
+    entry.innerHTML = `<strong>${(street && street.name) || 'Unnamed street'}</strong><span>${street && street.percentage != null ? street.percentage : 0}% walked</span>`;
+    if (streetList) {
+      streetList.appendChild(entry);
+    }
   });
 }
 
-municipalityInput.addEventListener('input', scheduleSuggestionLookup);
+window.renderStreetTable = renderStreetTable;
+
+async function initializeMunicipalityView() {
+  municipalityInput.value = 'Nordre Follo';
+  streetList.innerHTML = '<div class="street-entry">Loading local road dataset…</div>';
+
+  try {
+    const rows = await loadLocalNordreFolloRows([]);
+    currentMunicipalityResults = Array.isArray(rows) ? rows : [];
+    currentPage = 1;
+    renderStreetTable();
+  } catch (error) {
+    console.error('Unable to load the local Nordre Follo dataset', error);
+    currentMunicipalityResults = [];
+    currentPage = 1;
+    streetList.innerHTML = '<div class="street-entry">No streets were loaded from the local dataset.</div>';
+  }
+}
+
+window.initializeMunicipalityView = initializeMunicipalityView;
+window.loadMunicipalityStreetList = loadMunicipalityStreetList;
+window.renderStreetTable = renderStreetTable;
+
+window.addEventListener('load', () => {
+  initializeMunicipalityView();
+});
+
+initializeMunicipalityView();
+
+municipalityInput.addEventListener('input', () => {
+  scheduleSuggestionLookup();
+  autoLoadNordreFolloIfNeeded();
+});
 municipalityInput.addEventListener('focus', () => {
   if (municipalityInput.value.trim()) {
     fetchMunicipalitySuggestions();
+    autoLoadNordreFolloIfNeeded();
   }
 });
 municipalityInput.addEventListener('keydown', (event) => {
@@ -353,7 +501,6 @@ document.addEventListener('click', (event) => {
     hideSuggestionList();
   }
 });
-loadMunicipalityBtn.addEventListener('click', loadMunicipalityStreetList);
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage -= 1;

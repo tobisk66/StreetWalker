@@ -4,6 +4,7 @@
   "private": true,
   "description": "Small same-origin proxy for place search and Overpass requests.",
   "scripts": {
-    "start": "node proxy-server.js"
+    "start": "node proxy-server.js",
+    "api": "node api-server.js"
   }
 }

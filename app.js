@@ -16,7 +16,10 @@ const matchedRoadsValue = document.getElementById('matchedRoadsValue');
 const walkHistoryList = document.getElementById('walkHistoryList');
 
 const STORAGE_KEY = 'walker-streets-history';
-window.PROXY_BASE_URL = window.PROXY_BASE_URL || 'https://streetwalker.onrender.com';
+const defaultProxyBaseUrl = (typeof window !== 'undefined' && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'))
+  ? 'http://127.0.0.1:3000'
+  : 'https://streetwalker.onrender.com';
+window.PROXY_BASE_URL = window.PROXY_BASE_URL || defaultProxyBaseUrl;
 
 let watchId = null;
 let isTracking = false;
@@ -26,6 +29,9 @@ let saveHistory = [];
 let currentTrackLine = null;
 let currentMarker = null;
 let replayedRouteLayer = null;
+let localRoads = [];
+let localRoadsLoaded = false;
+let localRoadsPromise = null;
 
 function toRadians(value) {
   return (value * Math.PI) / 180;
@@ -209,52 +215,82 @@ function stopTrackingAndSave() {
   gpsStatus.textContent = 'Walk saved';
 }
 
-function drawRoadsInMap(bbox) {
+function normalizeLocalRoadFeature(road) {
+  const points = Array.isArray(road?.geometry) ? road.geometry : [];
+  const normalizedPoints = points
+    .filter((point) => Array.isArray(point) && point.length >= 2)
+    .map((point) => [Number(point[0]), Number(point[1])])
+    .filter((point) => Number.isFinite(point[0]) && Number.isFinite(point[1]));
+
+  return {
+    id: road?.id || null,
+    name: road?.name || 'Street',
+    points: normalizedPoints,
+  };
+}
+
+function isRoadVisibleInBounds(feature, bbox) {
+  if (!feature?.points?.length) {
+    return false;
+  }
+
   const minLat = bbox._southWest.lat;
   const minLng = bbox._southWest.lng;
   const maxLat = bbox._northEast.lat;
   const maxLng = bbox._northEast.lng;
 
-  const query = `[out:json][timeout:25];(
-    way["highway"](${minLat},${minLng},${maxLat},${maxLng});
-    >;
-  );
-  out geom;`;
+  return feature.points.some(([lng, lat]) => lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng);
+}
 
-  fetch(`${window.PROXY_BASE_URL}/proxy/overpass`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain',
-    },
-    body: query,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const elements = Array.isArray(data?.elements) ? data.elements : [];
-      const nodes = new Map();
-      elements.forEach((element) => {
-        if (element.type === 'node') {
-          nodes.set(element.id, [element.lon, element.lat]);
+function loadLocalRoadFeatures() {
+  if (localRoadsPromise) {
+    return localRoadsPromise;
+  }
+
+  const datasetCandidates = [
+    './data/nordre-follo-roads-complete.json',
+    './data/nordre-follo-roads-actual.json',
+    './data/nordre-follo-roads-kartverket.json',
+    './data/nordre-follo-roads.json',
+    './data/nordre-follo-roads.json.new',
+  ];
+
+  localRoadsPromise = (async () => {
+    for (const datasetPath of datasetCandidates) {
+      try {
+        const response = await fetch(datasetPath);
+        if (!response.ok) {
+          continue;
         }
-      });
 
-      roadFeatures = elements
-        .filter((element) => element.type === 'way')
-        .map((way) => ({
-          id: way.id,
-          name: way.tags?.name || 'Street',
-          points: way.geometry
-            .map((node) => nodes.get(node?.id || node) || [])
-            .filter((point) => point.length === 2),
-        }))
-        .filter((feature) => feature.points.length > 1);
+        const data = await response.json();
+        const roads = Array.isArray(data?.roads) ? data.roads : [];
+        const normalized = roads.map(normalizeLocalRoadFeature).filter((feature) => feature.points.length > 1);
 
-      refreshRoadStatus();
-    })
-    .catch((error) => {
-      console.error('Unable to fetch public street list', error);
-      gpsStatus.textContent = 'Street data unavailable';
-    });
+        if (normalized.length) {
+          localRoads = normalized;
+          localRoadsLoaded = true;
+          return localRoads;
+        }
+      } catch (error) {
+        console.warn(`Unable to load dataset ${datasetPath}`, error);
+      }
+    }
+
+    localRoadsLoaded = true;
+    localRoads = [];
+    return [];
+  })();
+
+  return localRoadsPromise;
+}
+
+async function drawRoadsInMap(bbox) {
+  const roads = await loadLocalRoadFeatures();
+  const visibleRoads = roads.filter((feature) => isRoadVisibleInBounds(feature, bbox));
+
+  roadFeatures = visibleRoads.length ? visibleRoads : roads.slice(0, 20);
+  refreshRoadStatus();
 }
 
 function setCurrentLocationMarker(position) {

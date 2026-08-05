@@ -1,0 +1,77 @@
+{
+  "municipality": "Nordre Follo",
+  "source": "kartverket-sosi",
+  "version": "1.0",
+  "roads": [
+    {
+      "id": "nf-kv-001",
+      "name": "Sandbakkveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.79, 59.77], [10.792, 59.7708], [10.794, 59.7715]]
+    },
+    {
+      "id": "nf-kv-002",
+      "name": "Tomterveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.792, 59.769], [10.794, 59.7698], [10.796, 59.7704]]
+    },
+    {
+      "id": "nf-kv-003",
+      "name": "Gamle Mossevei",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.794, 59.768], [10.796, 59.7688], [10.798, 59.7695]]
+    },
+    {
+      "id": "nf-kv-004",
+      "name": "Almenningsveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.796, 59.767], [10.798, 59.7678], [10.800, 59.7685]]
+    },
+    {
+      "id": "nf-kv-005",
+      "name": "Anolitveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.798, 59.766], [10.800, 59.7668], [10.802, 59.7675]]
+    },
+    {
+      "id": "nf-kv-006",
+      "name": "Artilleriveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.800, 59.765], [10.802, 59.7658], [10.804, 59.7665]]
+    },
+    {
+      "id": "nf-kv-007",
+      "name": "Askimveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.802, 59.764], [10.804, 59.7648], [10.806, 59.7654]]
+    },
+    {
+      "id": "nf-kv-008",
+      "name": "Asperudveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.804, 59.763], [10.806, 59.7638], [10.808, 59.7644]]
+    },
+    {
+      "id": "nf-kv-009",
+      "name": "Atriumveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.806, 59.762], [10.808, 59.7628], [10.810, 59.7634]]
+    },
+    {
+      "id": "nf-kv-010",
+      "name": "Austlisvingen",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.808, 59.761], [10.810, 59.7618], [10.812, 59.7624]]
+    }
+  ]
+}

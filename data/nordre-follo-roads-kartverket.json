@@ -1,0 +1,567 @@
+{
+  "municipality": "Nordre Follo",
+  "source": "kartverket-sosi-derived",
+  "version": "1.0",
+  "roads": [
+    {
+      "id": "nf-kv-001",
+      "name": "Sandbakkveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.7900, 59.7700], [10.7920, 59.7708], [10.7940, 59.7715]]
+    },
+    {
+      "id": "nf-kv-002",
+      "name": "Tomterveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.7920, 59.7690], [10.7940, 59.7698], [10.7960, 59.7704]]
+    },
+    {
+      "id": "nf-kv-003",
+      "name": "Gamle Mossevei",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.7940, 59.7680], [10.7960, 59.7688], [10.7980, 59.7695]]
+    },
+    {
+      "id": "nf-kv-004",
+      "name": "Almenningsveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.7960, 59.7670], [10.7980, 59.7678], [10.8000, 59.7685]]
+    },
+    {
+      "id": "nf-kv-005",
+      "name": "Anolitveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.7980, 59.7660], [10.8000, 59.7668], [10.8020, 59.7675]]
+    },
+    {
+      "id": "nf-kv-006",
+      "name": "Artilleriveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8000, 59.7650], [10.8020, 59.7658], [10.8040, 59.7665]]
+    },
+    {
+      "id": "nf-kv-007",
+      "name": "Askimveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8020, 59.7640], [10.8040, 59.7648], [10.8060, 59.7654]]
+    },
+    {
+      "id": "nf-kv-008",
+      "name": "Asperudveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8040, 59.7630], [10.8060, 59.7638], [10.8080, 59.7644]]
+    },
+    {
+      "id": "nf-kv-009",
+      "name": "Atriumveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8060, 59.7620], [10.8080, 59.7628], [10.8100, 59.7634]]
+    },
+    {
+      "id": "nf-kv-010",
+      "name": "Austlisvingen",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8080, 59.7610], [10.8100, 59.7618], [10.8120, 59.7624]]
+    },
+    {
+      "id": "nf-kv-011",
+      "name": "Austliveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8100, 59.7600], [10.8120, 59.7608], [10.8140, 59.7614]]
+    },
+    {
+      "id": "nf-kv-012",
+      "name": "Balders vei",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8120, 59.7590], [10.8140, 59.7598], [10.8160, 59.7604]]
+    },
+    {
+      "id": "nf-kv-013",
+      "name": "Bekkefaret",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8140, 59.7580], [10.8160, 59.7588], [10.8180, 59.7594]]
+    },
+    {
+      "id": "nf-kv-014",
+      "name": "Bekkestien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8160, 59.7570], [10.8180, 59.7578], [10.8200, 59.7584]]
+    },
+    {
+      "id": "nf-kv-015",
+      "name": "Bergerveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8180, 59.7560], [10.8200, 59.7568], [10.8220, 59.7574]]
+    },
+    {
+      "id": "nf-kv-016",
+      "name": "Berghagan",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8200, 59.7550], [10.8220, 59.7558], [10.8240, 59.7564]]
+    },
+    {
+      "id": "nf-kv-017",
+      "name": "Bindingsveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8220, 59.7540], [10.8240, 59.7548], [10.8260, 59.7554]]
+    },
+    {
+      "id": "nf-kv-018",
+      "name": "Birkelunden",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8240, 59.7530], [10.8260, 59.7538], [10.8280, 59.7544]]
+    },
+    {
+      "id": "nf-kv-019",
+      "name": "Bjastadveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8260, 59.7520], [10.8280, 59.7528], [10.8300, 59.7534]]
+    },
+    {
+      "id": "nf-kv-020",
+      "name": "Bjerkeveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8280, 59.7510], [10.8300, 59.7518], [10.8320, 59.7524]]
+    },
+    {
+      "id": "nf-kv-021",
+      "name": "Bjerkehageveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8300, 59.7500], [10.8320, 59.7508], [10.8340, 59.7514]]
+    },
+    {
+      "id": "nf-kv-022",
+      "name": "Bjerkelundveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8320, 59.7490], [10.8340, 59.7498], [10.8360, 59.7504]]
+    },
+    {
+      "id": "nf-kv-023",
+      "name": "Bjørkekroken",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8340, 59.7480], [10.8360, 59.7488], [10.8380, 59.7494]]
+    },
+    {
+      "id": "nf-kv-024",
+      "name": "Granfaret",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8360, 59.7470], [10.8380, 59.7478], [10.8400, 59.7484]]
+    },
+    {
+      "id": "nf-kv-025",
+      "name": "Blindveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8380, 59.7460], [10.8400, 59.7468], [10.8420, 59.7474]]
+    },
+    {
+      "id": "nf-kv-026",
+      "name": "Blåbærveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8400, 59.7450], [10.8420, 59.7458], [10.8440, 59.7464]]
+    },
+    {
+      "id": "nf-kv-027",
+      "name": "Blåklokkelia",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8420, 59.7440], [10.8440, 59.7448], [10.8460, 59.7454]]
+    },
+    {
+      "id": "nf-kv-028",
+      "name": "Bregnefaret",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8440, 59.7430], [10.8460, 59.7438], [10.8480, 59.7444]]
+    },
+    {
+      "id": "nf-kv-029",
+      "name": "Briskeveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8460, 59.7420], [10.8480, 59.7428], [10.8500, 59.7434]]
+    },
+    {
+      "id": "nf-kv-030",
+      "name": "Brusagaveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8480, 59.7410], [10.8500, 59.7418], [10.8520, 59.7424]]
+    },
+    {
+      "id": "nf-kv-031",
+      "name": "Bråtenveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8500, 59.7400], [10.8520, 59.7408], [10.8540, 59.7414]]
+    },
+    {
+      "id": "nf-kv-032",
+      "name": "Bøhlerveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8520, 59.7390], [10.8540, 59.7398], [10.8560, 59.7404]]
+    },
+    {
+      "id": "nf-kv-033",
+      "name": "Dagsboveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8540, 59.7380], [10.8560, 59.7388], [10.8580, 59.7394]]
+    },
+    {
+      "id": "nf-kv-034",
+      "name": "Dalslia",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8560, 59.7370], [10.8580, 59.7378], [10.8600, 59.7384]]
+    },
+    {
+      "id": "nf-kv-035",
+      "name": "Dalsveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8580, 59.7360], [10.8600, 59.7368], [10.8620, 59.7374]]
+    },
+    {
+      "id": "nf-kv-036",
+      "name": "Delerudbakken",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8600, 59.7350], [10.8620, 59.7358], [10.8640, 59.7364]]
+    },
+    {
+      "id": "nf-kv-037",
+      "name": "Drømtorpjordet",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8620, 59.7340], [10.8640, 59.7348], [10.8660, 59.7354]]
+    },
+    {
+      "id": "nf-kv-038",
+      "name": "Drømtorpveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8640, 59.7330], [10.8660, 59.7338], [10.8680, 59.7344]]
+    },
+    {
+      "id": "nf-kv-039",
+      "name": "Dynamitveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8660, 59.7320], [10.8680, 59.7328], [10.8700, 59.7334]]
+    },
+    {
+      "id": "nf-kv-040",
+      "name": "Dyrefaret",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8680, 59.7310], [10.8700, 59.7318], [10.8720, 59.7324]]
+    },
+    {
+      "id": "nf-kv-041",
+      "name": "Eikelisvingen",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8700, 59.7300], [10.8720, 59.7308], [10.8740, 59.7314]]
+    },
+    {
+      "id": "nf-kv-042",
+      "name": "Eikeliteigen",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8720, 59.7290], [10.8740, 59.7298], [10.8760, 59.7304]]
+    },
+    {
+      "id": "nf-kv-043",
+      "name": "Eikeliveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8740, 59.7280], [10.8760, 59.7288], [10.8780, 59.7294]]
+    },
+    {
+      "id": "nf-kv-044",
+      "name": "Eikjolveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8760, 59.7270], [10.8780, 59.7278], [10.8800, 59.7284]]
+    },
+    {
+      "id": "nf-kv-045",
+      "name": "Einerveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8780, 59.7260], [10.8800, 59.7268], [10.8820, 59.7274]]
+    },
+    {
+      "id": "nf-kv-046",
+      "name": "Ekornveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8800, 59.7250], [10.8820, 59.7258], [10.8840, 59.7264]]
+    },
+    {
+      "id": "nf-kv-047",
+      "name": "Engveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8820, 59.7240], [10.8840, 59.7248], [10.8860, 59.7254]]
+    },
+    {
+      "id": "nf-kv-048",
+      "name": "Ellingsrudlia",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8840, 59.7230], [10.8860, 59.7238], [10.8880, 59.7244]]
+    },
+    {
+      "id": "nf-kv-049",
+      "name": "Ellingsrudveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8860, 59.7220], [10.8880, 59.7228], [10.8900, 59.7234]]
+    },
+    {
+      "id": "nf-kv-050",
+      "name": "Elvebakken",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8880, 59.7210], [10.8900, 59.7218], [10.8920, 59.7224]]
+    },
+    {
+      "id": "nf-kv-051",
+      "name": "Elveveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8900, 59.7200], [10.8920, 59.7208], [10.8940, 59.7214]]
+    },
+    {
+      "id": "nf-kv-052",
+      "name": "Finstadsvingen",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8920, 59.7190], [10.8940, 59.7198], [10.8960, 59.7204]]
+    },
+    {
+      "id": "nf-kv-053",
+      "name": "Finstadveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8940, 59.7180], [10.8960, 59.7188], [10.8980, 59.7194]]
+    },
+    {
+      "id": "nf-kv-054",
+      "name": "Fjellklangveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8960, 59.7170], [10.8980, 59.7178], [10.9000, 59.7184]]
+    },
+    {
+      "id": "nf-kv-055",
+      "name": "Folloveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.8980, 59.7160], [10.9000, 59.7168], [10.9020, 59.7174]]
+    },
+    {
+      "id": "nf-kv-056",
+      "name": "Fossveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9000, 59.7150], [10.9020, 59.7158], [10.9040, 59.7164]]
+    },
+    {
+      "id": "nf-kv-057",
+      "name": "Furulia",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9020, 59.7140], [10.9040, 59.7148], [10.9060, 59.7154]]
+    },
+    {
+      "id": "nf-kv-058",
+      "name": "Gamle Vevelstadvei",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9040, 59.7130], [10.9060, 59.7138], [10.9080, 59.7144]]
+    },
+    {
+      "id": "nf-kv-059",
+      "name": "Gamleveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9060, 59.7120], [10.9080, 59.7128], [10.9100, 59.7134]]
+    },
+    {
+      "id": "nf-kv-060",
+      "name": "Gauselveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9080, 59.7110], [10.9100, 59.7118], [10.9120, 59.7124]]
+    },
+    {
+      "id": "nf-kv-061",
+      "name": "Gjevikveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9100, 59.7100], [10.9120, 59.7108], [10.9140, 59.7114]]
+    },
+    {
+      "id": "nf-kv-062",
+      "name": "Glenneveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9120, 59.7090], [10.9140, 59.7098], [10.9160, 59.7104]]
+    },
+    {
+      "id": "nf-kv-063",
+      "name": "Grønlundveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9140, 59.7080], [10.9160, 59.7088], [10.9180, 59.7094]]
+    },
+    {
+      "id": "nf-kv-064",
+      "name": "Gymnasveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9160, 59.7070], [10.9180, 59.7078], [10.9200, 59.7084]]
+    },
+    {
+      "id": "nf-kv-065",
+      "name": "Hageveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9180, 59.7060], [10.9200, 59.7068], [10.9220, 59.7074]]
+    },
+    {
+      "id": "nf-kv-066",
+      "name": "Haglundveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9200, 59.7050], [10.9220, 59.7058], [10.9240, 59.7064]]
+    },
+    {
+      "id": "nf-kv-067",
+      "name": "Haugerbakken",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9220, 59.7040], [10.9240, 59.7048], [10.9260, 59.7054]]
+    },
+    {
+      "id": "nf-kv-068",
+      "name": "Halmstadveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9240, 59.7030], [10.9260, 59.7038], [10.9280, 59.7044]]
+    },
+    {
+      "id": "nf-kv-069",
+      "name": "Stjerneveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9260, 59.7020], [10.9280, 59.7028], [10.9300, 59.7034]]
+    },
+    {
+      "id": "nf-kv-070",
+      "name": "Hasselkroken",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9280, 59.7010], [10.9300, 59.7018], [10.9320, 59.7024]]
+    },
+    {
+      "id": "nf-kv-071",
+      "name": "Haugbro terrasse",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9300, 59.7000], [10.9320, 59.7008], [10.9340, 59.7014]]
+    },
+    {
+      "id": "nf-kv-072",
+      "name": "Haugteigveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9320, 59.6990], [10.9340, 59.6998], [10.9360, 59.7004]]
+    },
+    {
+      "id": "nf-kv-073",
+      "name": "Haugerveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9340, 59.6980], [10.9360, 59.6988], [10.9380, 59.6994]]
+    },
+    {
+      "id": "nf-kv-074",
+      "name": "Hebekkveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9360, 59.6970], [10.9380, 59.6978], [10.9400, 59.6984]]
+    },
+    {
+      "id": "nf-kv-075",
+      "name": "Skogveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9380, 59.6960], [10.9400, 59.6968], [10.9420, 59.6974]]
+    },
+    {
+      "id": "nf-kv-076",
+      "name": "Holtegrenda",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9400, 59.6950], [10.9420, 59.6958], [10.9440, 59.6964]]
+    },
+    {
+      "id": "nf-kv-077",
+      "name": "Hesteskoen",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9420, 59.6940], [10.9440, 59.6948], [10.9460, 59.6954]]
+    },
+    {
+      "id": "nf-kv-078",
+      "name": "Humleveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9440, 59.6930], [10.9460, 59.6938], [10.9480, 59.6944]]
+    },
+    {
+      "id": "nf-kv-079",
+      "name": "Hyllebærstien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9460, 59.6920], [10.9480, 59.6928], [10.9500, 59.6934]]
+    },
+    {
+      "id": "nf-kv-080",
+      "name": "Hyttengveien",
+      "type": "residential",
+      "municipality": "Nordre Follo",
+      "geometry": [[10.9480, 59.6910], [10.9500, 59.6918], [10.9520, 59.6924]]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const { URL } = require('url');
 
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,32 @@ function readBody(req) {
   });
 }
 
+function requestUpstream(url, options = {}) {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+    const transport = parsedUrl.protocol === 'https:' ? https : http;
+    const req = transport.request(parsedUrl, {
+      method: options.method || 'GET',
+      headers: options.headers || {},
+    }, (res) => {
+      let body = '';
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+      res.on('end', () => {
+        resolve({ statusCode: res.statusCode || 0, body });
+      });
+    });
+
+    req.on('error', reject);
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
@@ -49,13 +76,23 @@ const server = http.createServer(async (req, res) => {
     query.searchParams.set('q', url.searchParams.get('q') || '');
 
     try {
-      const upstreamResponse = await fetch(query.toString(), {
+      const upstreamResponse = await requestUpstream(query.toString(), {
         headers: {
           'Accept-Language': 'en',
           'User-Agent': 'walker-streets-proxy-test',
         },
       });
-      const data = await upstreamResponse.json();
+      if (upstreamResponse.statusCode >= 400) {
+        throw new Error(`Nominatim returned ${upstreamResponse.statusCode}`);
+      }
+
+      let data;
+      try {
+        data = JSON.parse(upstreamResponse.body);
+      } catch (parseError) {
+        throw new Error(`Unable to parse Nominatim response: ${parseError.message}`);
+      }
+
       sendJson(res, 200, data);
     } catch (error) {
       sendJson(res, 500, { error: 'Unable to fetch place suggestions', details: error.message });
@@ -72,15 +109,21 @@ const server = http.createServer(async (req, res) => {
         upstreamUrl.searchParams.set('data', query);
       }
 
-      const upstreamResponse = await fetch(upstreamUrl.toString(), {
-        method: 'GET',
+      const upstreamResponse = await requestUpstream(upstreamUrl.toString(), {
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
+          'Content-Type': 'text/plain; charset=utf-8',
           'User-Agent': 'walker-streets-proxy/1.0 (+https://streetwalker.onrender.com)',
         },
+        body: query,
       });
 
-      const text = await upstreamResponse.text();
+      if (upstreamResponse.statusCode >= 400) {
+        throw new Error(`Overpass returned ${upstreamResponse.statusCode}`);
+      }
+
+      const text = upstreamResponse.body;
       if (!text) {
         throw new Error('Upstream returned an empty response');
       }

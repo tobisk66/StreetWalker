@@ -1,10 +1,14 @@
-const CACHE_NAME = 'walker-streets-v1';
+const CACHE_NAME = 'walker-streets-v3';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './municipality.js',
+  './nordre-follo-data.js',
   './manifest.webmanifest',
+  './data/nordre-follo-roads.json',
+  './data/nordre-follo-roads-complete.json',
 ];
 
 self.addEventListener('install', (event) => {
