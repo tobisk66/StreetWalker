@@ -64,6 +64,15 @@ function sanitizeQuery(text) {
   return text.replace(/['"`]/g, '').trim();
 }
 
+function normalizeStreetName(name) {
+  return (name || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function getAllSavedWalkPoints() {
   return (saveHistory || []).flatMap((entry) => entry.points || []);
 }
@@ -73,6 +82,41 @@ function computeStreetCoveragePercentage(points, streetCenter) {
   const centerPoint = { lat: Number(streetCenter.lat), lng: Number(streetCenter.lon) };
   const matchedPoints = points.filter((trackPoint) => haversineDistance(trackPoint, centerPoint) < 30);
   return Math.min(100, Math.round((matchedPoints.length / points.length) * 100));
+}
+
+function buildStreetRows(elements, walkedPoints) {
+  const grouped = new Map();
+
+  elements
+    .filter((element) => element?.type === 'way')
+    .forEach((way) => {
+      const rawName = way?.tags?.name || 'Unnamed street';
+      const normalizedName = normalizeStreetName(rawName);
+      if (!normalizedName || normalizedName === 'unnamed street') {
+        return;
+      }
+
+      const center = way?.center || way?.geometry?.[0] || null;
+      const streetKey = normalizedName;
+      const existing = grouped.get(streetKey);
+      if (existing) {
+        if (!existing.count) {
+          existing.count = 0;
+        }
+        return;
+      }
+
+      grouped.set(streetKey, {
+        name: rawName,
+        normalizedName,
+        center,
+        percentage: walkedPoints.length ? computeStreetCoveragePercentage(walkedPoints, center) : 0,
+      });
+    });
+
+  return Array.from(grouped.values())
+    .filter((street) => street.name && street.name !== 'Unnamed street')
+    .sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
 }
 
 function renderSuggestions(results) {
@@ -126,7 +170,18 @@ function fetchMunicipalitySuggestions() {
         return;
       }
 
-      renderSuggestions(Array.isArray(results) ? results : []);
+      const uniqueResults = Array.isArray(results)
+        ? results.filter((place, index, list) => {
+            const displayName = typeof place === 'string' ? place : place?.display_name;
+            const key = (displayName || '').trim().toLowerCase();
+            return key && list.findIndex((candidate) => {
+              const candidateName = typeof candidate === 'string' ? candidate : candidate?.display_name;
+              return (candidateName || '').trim().toLowerCase() === key;
+            }) === index;
+          })
+        : [];
+
+      renderSuggestions(uniqueResults);
     })
     .catch(() => {
       if (requestId !== latestSuggestionRequest) {
@@ -222,13 +277,7 @@ function loadMunicipalityStreetList() {
         })
         .then((data) => {
           const elements = Array.isArray(data?.elements) ? data.elements : [];
-          const streetRows = elements
-            .filter((element) => element.type === 'way')
-            .map((way) => ({
-              name: way.tags?.name || 'Unnamed street',
-              percentage: walkedPoints.length ? computeStreetCoveragePercentage(walkedPoints, way.center || way.geometry?.[0]) : 0,
-            }))
-            .sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
+          const streetRows = buildStreetRows(elements, walkedPoints);
 
           currentMunicipalityResults = streetRows;
           currentPage = 1;
