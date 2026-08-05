@@ -66,15 +66,36 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/proxy/overpass') {
     try {
       const bodyText = await readBody(req);
-      const upstreamResponse = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
+      const query = (bodyText || '').trim();
+      const upstreamUrl = new URL('https://overpass-api.de/api/interpreter');
+      if (query) {
+        upstreamUrl.searchParams.set('data', query);
+      }
+
+      const upstreamResponse = await fetch(upstreamUrl.toString(), {
+        method: 'GET',
         headers: {
-          'Content-Type': 'text/plain',
+          'Accept': 'application/json',
+          'User-Agent': 'walker-streets-proxy/1.0 (+https://streetwalker.onrender.com)',
         },
-        body: bodyText,
       });
+
       const text = await upstreamResponse.text();
-      sendJson(res, 200, JSON.parse(text));
+      if (!text) {
+        throw new Error('Upstream returned an empty response');
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (parseError) {
+        if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+          throw new Error(`Overpass returned HTML instead of JSON: ${text.slice(0, 160)}`);
+        }
+        throw parseError;
+      }
+
+      sendJson(res, 200, parsed);
     } catch (error) {
       sendJson(res, 500, { error: 'Unable to fetch street data', details: error.message });
     }

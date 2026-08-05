@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Walker Streets</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="toolbar">
+        <div>
+          <h1>Walker Streets</h1>
+          <p>Track what you have walked and compare it to public street data.</p>
+        </div>
+        <div class="actions">
+          <button id="toggleTrackingBtn" class="primary">Start walk</button>
+          <button id="clearButton" class="secondary">Clear current walk</button>
+        </div>
+      </header>
+
+      <main class="content-grid">
+        <section class="map-card">
+          <div id="map"></div>
+        </section>
+
+        <aside class="panel">
+          <div class="stat-card">
+            <span class="label">GPS status</span>
+            <strong id="gpsStatus">Idle</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Tracked distance</span>
+            <strong id="distanceValue">0 m</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Roads matched</span>
+            <strong id="matchedRoadsValue">0</strong>
+          </div>
+          <div class="legend">
+            <div><span class="swatch green"></span>Saved walk</div>
+            <div><span class="swatch gray"></span>Street in map</div>
+            <div><span class="swatch red"></span>Live walk</div>
+          </div>
+          <div class="history-panel">
+            <h2>Saved walks</h2>
+            <div id="walkHistoryList" class="history-list"></div>
+          </div>
+          <div class="municipality-panel">
+            <h2>Municipality view</h2>
+            <div class="search-row">
+              <div class="search-box">
+                <input id="municipalityInput" list="municipalitySuggestions" type="text" placeholder="Search city or municipality" />
+                <datalist id="municipalitySuggestions"></datalist>
+                <div id="municipalitySuggestionsList" class="suggestion-list hidden"></div>
+              </div>
+              <button id="loadMunicipalityBtn" class="primary">Load</button>
+            </div>
+            <div class="pager-row">
+              <button id="prevPageBtn" class="secondary">Prev</button>
+              <span id="pageInfo">Page 1</span>
+              <button id="nextPageBtn" class="secondary">Next</button>
+            </div>
+            <div id="streetList" class="street-list"></div>
+          </div>
+          <div class="helper">
+            <p>
+              Start a walk, stop it when you are done, and the route will be stored locally so it is visible the next time you open the app.
+            </p>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#1a7cc7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="app.js"></script>
+    <script src="municipality.js"></script>
+  </body>
+</html>
